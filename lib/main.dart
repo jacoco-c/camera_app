@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 
+import 'package:camera_app/drawer_menu.dart';
+
 Future<void> main() async {
   // Fetch the available cameras before initializing the app.
   try {
@@ -86,6 +88,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       appBar: AppBar(
         title: const Text('Camera example'),
       ),
+      drawer: DrawerMenu(),
       body: Column(
         children: <Widget>[
           Expanded(
@@ -289,7 +292,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   /// Toggle Flash
   Future<void> _onFlashButtonPressed() async {
-    bool hasFlash = false;
+    /* bool hasFlash = false; */
     if (flashMode == FlashMode.off || flashMode == FlashMode.torch) {
       // Turn on the flash for capture
       flashMode = FlashMode.alwaysFlash;
@@ -613,12 +616,12 @@ class _ZoomableWidgetState extends State<ZoomableWidget> {
           //print(scaleDetails);
         },
         onTapUp: (TapUpDetails det) {
-          final RenderBox box = context.findRenderObject();
-          final Offset localPoint = box.globalToLocal(det.globalPosition);
-          final Offset scaledPoint =
+          /* final RenderBox box = context.findRenderObject(); */
+          /* final Offset localPoint = box.globalToLocal(det.globalPosition); */
+          /* final Offset scaledPoint =
           localPoint.scale(1 / box.size.width, 1 / box.size.height);
           // TODO IMPLIMENT
-          // widget.onTapUp(scaledPoint);
+          // widget.onTapUp(scaledPoint); */
         },
         child: Stack(children: [
           Column(
