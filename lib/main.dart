@@ -122,6 +122,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           ),
           _captureControlRowWidget(),
           _toggleAudioWidget(),
+
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: Row(
@@ -129,7 +130,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               children: <Widget>[
                 _cameraTogglesRowWidget(),
                 CamMenu(),
+
                 _thumbnailWidget(),
+
               ],
             ),
           ),

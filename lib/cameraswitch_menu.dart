@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_better_camera/camera.dart';
+import 'package:camera_app/main.dart';
 
 
 
@@ -12,7 +13,7 @@ class CamMenu extends StatefulWidget {
 }
 
 class _CamMenu extends State<CamMenu> {
-  var _value = "1";
+  var _value = cameras[0];
   CameraController controller;
 
 
@@ -26,36 +27,36 @@ class _CamMenu extends State<CamMenu> {
 
 
   Widget _cameraTogglesMenuWidget () {
-    final List<Widget> toggles = <Widget>[];
+    final List<PopupMenuItem> toggles = <PopupMenuItem>[];
 
     if (cameras.isEmpty) {
       return const Text('No camera found');
     } else {
       for (CameraDescription cameraDescription in cameras) {
         toggles.add(
-          SizedBox(
-            width: 90.0,
-            child: RadioListTile<CameraDescription>(
-              title: Icon(getCameraLensIcon(cameraDescription.lensDirection)),
-              groupValue: controller?.description,
+          PopupMenuItem<CameraDescription>(
               value: cameraDescription,
-              onChanged: controller != null && controller.value.isRecordingVideo
-                  ? null
-                  : onNewCameraSelected,
-            ),
+              child: ListTile (
+                title: Icon(getCameraLensIcon(cameraDescription.lensDirection)),
+              )
           ),
         );
       }
     }
-    return DropdownButton(
-      items: toggles,
-      onChanged: (value) {
-        setState(() {
-          _value = value;
-        });
-      },
-      value: _value,
-      isExpanded: true,
+    return PopupMenuButton(
+        itemBuilder: (context) => toggles,
+        onSelected: (value) {
+          setState(() {
+            _value = value;
+            controller != null&& controller.value.isRecordingVideo
+                // ignore: unnecessary_statements
+                ? null
+                // ignore: unnecessary_statements
+                : onNewCameraSelected;
+          });
+        },
+        initialValue: _value,
+        icon: Icon(Icons.switch_camera)
     );
   }
 
@@ -77,17 +78,3 @@ class _CamMenu extends State<CamMenu> {
 
 }
 
-List<CameraDescription> cameras = [];
-
-/// Returns a suitable camera icon for [direction].
-IconData getCameraLensIcon(CameraLensDirection direction) {
-  switch (direction) {
-    case CameraLensDirection.back:
-      return Icons.camera_rear;
-    case CameraLensDirection.front:
-      return Icons.camera_front;
-    case CameraLensDirection.external:
-      return Icons.camera;
-  }
-  throw ArgumentError('Unknown lens direction');
-}
