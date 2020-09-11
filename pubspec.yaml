@@ -24,6 +24,12 @@ dependencies:
   flutter:
     sdk: flutter
 
+  flutter_better_camera: ^0.6.1
+  path:
+  path_provider:
+  video_player:
+  e2e:
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
