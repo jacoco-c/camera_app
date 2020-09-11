@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 
 import 'package:camera_app/drawer_menu.dart';
+import 'package:camera_app/cameraswitch_menu.dart';
 
 Future<void> main() async {
   // Fetch the available cameras before initializing the app.
@@ -127,6 +128,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 _cameraTogglesRowWidget(),
+                CamMenu(),
                 _thumbnailWidget(),
               ],
             ),
