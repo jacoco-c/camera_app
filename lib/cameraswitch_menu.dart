@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_better_camera/camera.dart';
+import 'package:video_player/video_player.dart';
 import 'package:camera_app/main.dart';
 
 
@@ -12,9 +13,12 @@ class CamMenu extends StatefulWidget {
   _CamMenu createState() => _CamMenu();
 }
 
-class _CamMenu extends State<CamMenu> {
-  var _value = cameras[0];
+class _CamMenu extends State<CamMenu>with WidgetsBindingObserver {
+  var _value;
   CameraController controller;
+  VideoPlayerController videoController;
+  VoidCallback videoPlayerListener;
+  bool enableAudio = true;
 
 
   @override
@@ -43,15 +47,13 @@ class _CamMenu extends State<CamMenu> {
         );
       }
     }
-    return PopupMenuButton(
+    return PopupMenuButton<dynamic>(
         itemBuilder: (context) => toggles,
         onSelected: (value) {
           setState(() {
             _value = value;
             controller != null&& controller.value.isRecordingVideo
-                // ignore: unnecessary_statements
                 ? null
-                // ignore: unnecessary_statements
                 : onNewCameraSelected;
           });
         },
@@ -67,13 +69,21 @@ class _CamMenu extends State<CamMenu> {
     controller = CameraController(
       cameraDescription,
       ResolutionPreset.medium,
+      enableAudio: enableAudio,
     );
 
+    controller.addListener(() {
+      if (mounted) setState(() {});
+    });
 
+    try {
+      await controller.initialize();
+    } on CameraException catch (e) {}
 
     if (mounted) {
       setState(() {});
     }
+
   }
 
 }

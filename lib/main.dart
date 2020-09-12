@@ -8,6 +8,7 @@ import 'package:video_player/video_player.dart';
 
 import 'package:camera_app/drawer_menu.dart';
 import 'package:camera_app/cameraswitch_menu.dart';
+import 'package:camera_app/zoom.dart';
 
 Future<void> main() async {
   // Fetch the available cameras before initializing the app.
@@ -26,13 +27,12 @@ void logError(String code, String message) =>
 class CameraApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return
-      MaterialApp(
-        theme: ThemeData(
-          accentTextTheme: TextTheme(bodyText1: TextStyle(color: Colors.white)),
-        ),
-        home: CameraExampleHome(),
-      );
+    return MaterialApp(
+      theme: ThemeData(
+        accentTextTheme: TextTheme(bodyText1: TextStyle(color: Colors.white)),
+      ),
+      home: CameraExampleHome(),
+    );
   }
 }
 
@@ -122,17 +122,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           ),
           _captureControlRowWidget(),
           _toggleAudioWidget(),
-
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: <Widget>[
                 _cameraTogglesRowWidget(),
-                CamMenu(),
-
+                /*CamMenu(),*/
                 _thumbnailWidget(),
-
               ],
             ),
           ),
@@ -192,23 +189,23 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             videoController == null && imagePath == null
                 ? Container()
                 : SizedBox(
-              child: (videoController == null)
-                  ? Image.file(File(imagePath))
-                  : Container(
-                child: Center(
-                  child: AspectRatio(
-                      aspectRatio:
-                      videoController.value.size != null
-                          ? videoController.value.aspectRatio
-                          : 1.0,
-                      child: VideoPlayer(videoController)),
-                ),
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.pink)),
-              ),
-              width: 64.0,
-              height: 64.0,
-            ),
+                    child: (videoController == null)
+                        ? Image.file(File(imagePath))
+                        : Container(
+                            child: Center(
+                              child: AspectRatio(
+                                  aspectRatio:
+                                      videoController.value.size != null
+                                          ? videoController.value.aspectRatio
+                                          : 1.0,
+                                  child: VideoPlayer(videoController)),
+                            ),
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.pink)),
+                          ),
+                    width: 64.0,
+                    height: 64.0,
+                  ),
           ],
         ),
       ),
@@ -225,8 +222,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           icon: const Icon(Icons.camera_alt),
           color: Colors.blue,
           onPressed: controller != null &&
-              controller.value.isInitialized &&
-              !controller.value.isRecordingVideo
+                  controller.value.isInitialized &&
+                  !controller.value.isRecordingVideo
               ? onTakePictureButtonPressed
               : null,
         ),
@@ -234,8 +231,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           icon: const Icon(Icons.videocam),
           color: Colors.blue,
           onPressed: controller != null &&
-              controller.value.isInitialized &&
-              !controller.value.isRecordingVideo
+                  controller.value.isInitialized &&
+                  !controller.value.isRecordingVideo
               ? onVideoRecordButtonPressed
               : null,
         ),
@@ -245,11 +242,11 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               : Icon(Icons.pause),
           color: Colors.blue,
           onPressed: controller != null &&
-              controller.value.isInitialized &&
-              controller.value.isRecordingVideo
+                  controller.value.isInitialized &&
+                  controller.value.isRecordingVideo
               ? (controller != null && controller.value.isRecordingPaused
-              ? onResumeButtonPressed
-              : onPauseButtonPressed)
+                  ? onResumeButtonPressed
+                  : onPauseButtonPressed)
               : null,
         ),
         IconButton(
@@ -266,8 +263,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
           icon: const Icon(Icons.stop),
           color: Colors.red,
           onPressed: controller != null &&
-              controller.value.isInitialized &&
-              controller.value.isRecordingVideo
+                  controller.value.isInitialized &&
+                  controller.value.isRecordingVideo
               ? onStopButtonPressed
               : null,
         ),
@@ -492,7 +489,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   Future<void> _startVideoPlayer() async {
     final VideoPlayerController vcontroller =
-    VideoPlayerController.file(File(videoPath));
+        VideoPlayerController.file(File(videoPath));
     videoPlayerListener = () {
       if (videoController != null && videoController.value.size != null) {
         // Refreshing the state to update video player with the correct ratio.
@@ -556,135 +553,4 @@ IconData getCameraLensIcon(CameraLensDirection direction) {
       return Icons.camera;
   }
   throw ArgumentError('Unknown lens direction');
-}
-
-//Zoomer this will be a seprate widget
-class ZoomableWidget extends StatefulWidget {
-  final Widget child;
-  final Function onZoom;
-  final Function onTapUp;
-
-  const ZoomableWidget({Key key, this.child, this.onZoom, this.onTapUp})
-      : super(key: key);
-
-  @override
-  _ZoomableWidgetState createState() => _ZoomableWidgetState();
-}
-
-class _ZoomableWidgetState extends State<ZoomableWidget> {
-  Matrix4 matrix = Matrix4.identity();
-  double zoom = 1;
-  double prevZoom = 1;
-  bool showZoom = false;
-  Timer t1;
-
-  bool handleZoom(newZoom){
-    if (newZoom >= 1) {
-      if (newZoom > 10) {
-        return false;
-      }
-      setState(() {
-        showZoom = true;
-        zoom = newZoom;
-      });
-
-      if (t1 != null) {
-        t1.cancel();
-      }
-
-      t1 = Timer(Duration(milliseconds: 2000), () {
-        setState(() {
-          showZoom = false;
-        });
-      });
-    }
-    widget.onZoom(zoom);
-    return true;
-
-  }
-  @override
-  Widget build(BuildContext context) {
-
-    return GestureDetector(
-        onScaleStart: (scaleDetails) {
-          print('scalStart');
-          setState(() => prevZoom = zoom);
-          //print(scaleDetails);
-        },
-        onScaleUpdate: (ScaleUpdateDetails scaleDetails) {
-          var newZoom = (prevZoom * scaleDetails.scale);
-
-          handleZoom(newZoom);
-        },
-        onScaleEnd: (scaleDetails) {
-          print('end');
-          //print(scaleDetails);
-        },
-        onTapUp: (TapUpDetails det) {
-          /* final RenderBox box = context.findRenderObject(); */
-          /* final Offset localPoint = box.globalToLocal(det.globalPosition); */
-          /* final Offset scaledPoint =
-          localPoint.scale(1 / box.size.width, 1 / box.size.height);
-          // TODO IMPLIMENT
-          // widget.onTapUp(scaledPoint); */
-        },
-        child: Stack(children: [
-          Column(
-            children: <Widget>[
-              Container(
-                child: Expanded(
-                  child: widget.child,
-                ),
-              ),
-            ],
-          ),
-          Visibility(
-            visible: showZoom, //Default is true,
-            child: Positioned.fill(
-              child: Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: <Widget>[
-                      Align(
-                        alignment: Alignment.bottomCenter,
-                        child:
-                        SliderTheme(
-                          data: SliderTheme.of(context).copyWith(
-                            valueIndicatorTextStyle: TextStyle(
-                                color: Colors.amber, letterSpacing: 2.0, fontSize: 30),
-                            valueIndicatorColor: Colors.blue,
-                            // This is what you are asking for
-                            inactiveTrackColor: Color(0xFF8D8E98),
-                            // Custom Gray Color
-                            activeTrackColor: Colors.white,
-                            thumbColor: Colors.red,
-                            overlayColor: Color(0x29EB1555),
-                            // Custom Thumb overlay Color
-                            thumbShape:
-                            RoundSliderThumbShape(enabledThumbRadius: 12.0),
-                            overlayShape:
-                            RoundSliderOverlayShape(overlayRadius: 20.0),
-
-                          ),
-                          child: Slider(
-                            value: zoom,
-                            onChanged: (double newValue) {
-                              handleZoom(newValue);
-                            },
-                            label: "$zoom",
-                            min: 1,
-                            max: 10,
-                          ),
-                        ),
-                      ),
-                    ],
-                  )),
-            ),
-            //maintainSize: bool. When true this is equivalent to invisible;
-            //replacement: Widget. Defaults to Sizedbox.shrink, 0x0
-          )
-        ]));
-  }
 }
