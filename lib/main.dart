@@ -87,60 +87,89 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         key: _scaffoldKey,
         drawer: DrawerMenu(),
         body: SafeArea(
-          child: Column(
-            children: <Widget>[
-            Expanded(
-              child: Container(
-                child: Padding(
-                  padding: const EdgeInsets.all(1.0),
-                  child: Center(
-                      child: ZoomableWidget(
-                          child: _cameraPreviewWidget(),
-                          onTapUp: (scaledPoint) {
-                            //controller.setPointOfInterest(scaledPoint);
-                          },
-                          onZoom: (zoom) {
-                            print('zoom');
-                            if (zoom < 11) {
-                              controller.zoom(zoom);
-                            }
-                          })),
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  border: Border.all(
-                    color:
-                        controller != null && controller.value.isRecordingVideo
-                            ? Colors.redAccent
-                            : Colors.grey,
-                    width: 3.0,
+
+            child: Stack(
+              children: <Widget>[
+              Expanded(
+                child: Container(
+                    child: Padding(
+                      padding: const EdgeInsets.all(1.0),
+                      child: Center(
+                          child: ZoomableWidget(
+                              child: _cameraPreviewWidget(),
+                              onTapUp: (scaledPoint) {
+                                //controller.setPointOfInterest(scaledPoint);
+                              },
+                              onZoom: (zoom) {
+                                print('zoom');
+                                if (zoom < 11) {
+                                  controller.zoom(zoom);
+                                }
+                              })),
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.black,
+                      border: Border.all(
+                        color:
+                            controller != null && controller.value.isRecordingVideo
+                                ? Colors.redAccent
+                                : Colors.grey,
+                        width: 3.0,
+                      ),
+                    ),
                   ),
+              ),
+
+              Container(
+                color: Colors.black.withOpacity(0.5),
+                margin: EdgeInsets.all(3.0),
+                child: _captureControlRowWidget()
+              ),
+              Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    height: 40.0,
+                    color: Colors.black.withOpacity(0.5),
+                    margin: EdgeInsets.fromLTRB(3.0, 0, 3.0, 58.0),
+                    child: _toggleAudioWidget(),
+                  )
+              ),
+
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  height: 55.0,
+                  color: Colors.black.withOpacity(0.5),
+                  margin: EdgeInsets.all(3.0),
+                  child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          _cameraTogglesRowWidget(),
+                          CamMenu(),
+                          _thumbnailWidget(),
+                          ],
+                        ),
                 ),
               ),
+
+            ],
             ),
-            _captureControlRowWidget(),
-            _toggleAudioWidget(),
-            Padding(
-              padding: const EdgeInsets.all(5.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  _cameraTogglesRowWidget(),
-                  CamMenu(),
-                  _thumbnailWidget(),
-                ],
-              ),
-            ),
-          ],
-          )
+
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Theme.of(context).accentColor,
-          onPressed: () {},
-          child: Icon(Icons.camera_alt),
+        floatingActionButton: Container(
+          margin: EdgeInsets.only(bottom: 30.0),
+          child: FloatingActionButton(
+            backgroundColor: Theme.of(context).accentColor,
+            onPressed: controller != null &&
+              controller.value.isInitialized &&
+              !controller.value.isRecordingVideo
+                ? onTakePictureButtonPressed
+                : null,
+            child: Icon(Icons.camera_alt),
+          ),
         ),
-        bottomNavigationBar: BottomAppBar(
+        /*bottomNavigationBar: BottomAppBar(
             color: Theme.of(context).primaryColor,
             notchMargin: 6.0,
             shape: AutomaticNotchedShape(
@@ -151,18 +180,24 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
             ),
             child: Row(children: <Widget>[
               _captureControlRowWidget(),
-            ])));
+            ]
+            )
+        )
+        */
+    );
   }
 
   /// Display the preview from the camera (or a message if the preview is not available).
   Widget _cameraPreviewWidget() {
     if (controller == null || !controller.value.isInitialized) {
-      return const Text(
-        'Tap a camera',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 24.0,
-          fontWeight: FontWeight.w900,
+      return Center(
+        child: const Text(
+          'Tap a camera',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 24.0,
+            fontWeight: FontWeight.w900,
+          ),
         ),
       );
     } else {
@@ -198,7 +233,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   Widget _thumbnailWidget() {
     return Expanded(
       child: Align(
-        alignment: Alignment.centerRight,
+        alignment: Alignment.bottomRight,
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
