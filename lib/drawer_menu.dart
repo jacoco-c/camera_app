@@ -14,9 +14,6 @@ class _DrawerMenu extends State<DrawerMenu> {
         children: <Widget>[
         DrawerHeader(
           child: Text('Drawer Header'),
-          decoration: BoxDecoration(
-            color: Colors.blue,
-          ),
         ),
         ListTile(
           title: Text('Item2'),

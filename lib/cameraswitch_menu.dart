@@ -1,25 +1,20 @@
-
 import 'package:flutter/material.dart';
 
 import 'package:flutter_better_camera/camera.dart';
 import 'package:video_player/video_player.dart';
 import 'package:camera_app/main.dart';
 
-
-
-
 class CamMenu extends StatefulWidget {
   @override
   _CamMenu createState() => _CamMenu();
 }
 
-class _CamMenu extends State<CamMenu>with WidgetsBindingObserver {
+class _CamMenu extends State<CamMenu> with WidgetsBindingObserver {
   var _value;
   CameraController controller;
   VideoPlayerController videoController;
   VoidCallback videoPlayerListener;
   bool enableAudio = true;
-
 
   @override
   Widget build(BuildContext context) {
@@ -29,8 +24,7 @@ class _CamMenu extends State<CamMenu>with WidgetsBindingObserver {
     );
   }
 
-
-  Widget _cameraTogglesMenuWidget () {
+  Widget _cameraTogglesMenuWidget() {
     final List<PopupMenuItem> toggles = <PopupMenuItem>[];
 
     if (cameras.isEmpty) {
@@ -40,10 +34,9 @@ class _CamMenu extends State<CamMenu>with WidgetsBindingObserver {
         toggles.add(
           PopupMenuItem<CameraDescription>(
               value: cameraDescription,
-              child: ListTile (
+              child: ListTile(
                 title: Icon(getCameraLensIcon(cameraDescription.lensDirection)),
-              )
-          ),
+              )),
         );
       }
     }
@@ -52,14 +45,13 @@ class _CamMenu extends State<CamMenu>with WidgetsBindingObserver {
         onSelected: (value) {
           setState(() {
             _value = value;
-            controller != null&& controller.value.isRecordingVideo
+            controller != null && controller.value.isRecordingVideo
                 ? null
                 : onNewCameraSelected;
           });
         },
         initialValue: _value,
-        icon: Icon(Icons.switch_camera)
-    );
+        icon: Icon(Icons.switch_camera));
   }
 
   void onNewCameraSelected(CameraDescription cameraDescription) async {
@@ -83,8 +75,5 @@ class _CamMenu extends State<CamMenu>with WidgetsBindingObserver {
     if (mounted) {
       setState(() {});
     }
-
   }
-
 }
-
