@@ -48,6 +48,8 @@ class _CamMenu extends State<CamMenu> with WidgetsBindingObserver {
             controller != null && controller.value.isRecordingVideo
                 ? null
                 : onNewCameraSelected;
+            icon:
+            Icon(getCameraLensIcon(value.lensDirection));
           });
         },
         initialValue: _value,

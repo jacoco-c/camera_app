@@ -9,7 +9,6 @@ import 'package:video_player/video_player.dart';
 import 'package:camera_app/drawer_menu.dart';
 import 'package:camera_app/cameraswitch_menu.dart';
 import 'package:camera_app/zoom.dart';
-import 'package:camera_app/flash.dart';
 
 Future<void> main() async {
   // Fetch the available cameras before initializing the app.
@@ -50,7 +49,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   VideoPlayerController videoController;
   VoidCallback videoPlayerListener;
   bool enableAudio = true;
-  /*FlashMode flashMode = FlashMode.off;*/
+  FlashMode flashMode = FlashMode.off;
 
   @override
   void initState() {
@@ -83,107 +82,86 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-        key: _scaffoldKey,
-        drawer: DrawerMenu(),
-        body: SafeArea(
-
-            child: Stack(
-              children: <Widget>[
-              Expanded(
-                child: Container(
-                    child: Padding(
-                      padding: const EdgeInsets.all(1.0),
-                      child: Center(
-                          child: ZoomableWidget(
-                              child: _cameraPreviewWidget(),
-                              onTapUp: (scaledPoint) {
-                                //controller.setPointOfInterest(scaledPoint);
-                              },
-                              onZoom: (zoom) {
-                                print('zoom');
-                                if (zoom < 11) {
-                                  controller.zoom(zoom);
-                                }
-                              })),
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      border: Border.all(
-                        color:
-                            controller != null && controller.value.isRecordingVideo
-                                ? Colors.redAccent
-                                : Colors.grey,
-                        width: 3.0,
-                      ),
-                    ),
+      key: _scaffoldKey,
+      drawer: DrawerMenu(),
+      body: SafeArea(
+        child: Stack(
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                child: Padding(
+                  padding: const EdgeInsets.all(1.0),
+                  child: Center(
+                      child: ZoomableWidget(
+                          child: _cameraPreviewWidget(),
+                          onTapUp: (scaledPoint) {
+                            //controller.setPointOfInterest(scaledPoint);
+                          },
+                          onZoom: (zoom) {
+                            print('zoom');
+                            if (zoom < 11) {
+                              controller.zoom(zoom);
+                            }
+                          })),
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  border: Border.all(
+                    color:
+                        controller != null && controller.value.isRecordingVideo
+                            ? Colors.redAccent
+                            : Colors.grey,
+                    width: 3.0,
                   ),
-              ),
-
-              Container(
-                color: Colors.black.withOpacity(0.5),
-                margin: EdgeInsets.all(3.0),
-                child: _captureControlRowWidget()
-              ),
-              Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    height: 40.0,
-                    color: Colors.black.withOpacity(0.5),
-                    margin: EdgeInsets.fromLTRB(3.0, 0, 3.0, 58.0),
-                    child: _toggleAudioWidget(),
-                  )
-              ),
-
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  height: 55.0,
-                  color: Colors.black.withOpacity(0.5),
-                  margin: EdgeInsets.all(3.0),
-                  child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          _cameraTogglesRowWidget(),
-                          CamMenu(),
-                          _thumbnailWidget(),
-                          ],
-                        ),
                 ),
               ),
-
-            ],
             ),
-
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: Container(
-          margin: EdgeInsets.only(bottom: 30.0),
-          child: FloatingActionButton(
-            backgroundColor: Theme.of(context).accentColor,
-            onPressed: controller != null &&
-              controller.value.isInitialized &&
-              !controller.value.isRecordingVideo
-                ? onTakePictureButtonPressed
-                : null,
-            child: Icon(Icons.camera_alt),
-          ),
-        ),
-        /*bottomNavigationBar: BottomAppBar(
-            color: Theme.of(context).primaryColor,
-            notchMargin: 6.0,
-            shape: AutomaticNotchedShape(
-              RoundedRectangleBorder(),
-              StadiumBorder(
-                side: BorderSide(),
+            Container(
+                color: Colors.black.withOpacity(0.5),
+                margin: EdgeInsets.all(3.0),
+                child: _captureControlRowWidget()),
+            Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  height: 40.0,
+                  color: Colors.black.withOpacity(0.5),
+                  margin: EdgeInsets.fromLTRB(3.0, 0, 3.0, 58.0),
+                  child: _toggleAudioWidget(),
+                )),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                height: 55.0,
+                color: Colors.black.withOpacity(0.5),
+                margin: EdgeInsets.all(3.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    _cameraTogglesRowWidget(),
+                    CamMenu(),
+                    _thumbnailWidget(),
+                  ],
+                ),
               ),
             ),
-            child: Row(children: <Widget>[
-              _captureControlRowWidget(),
-            ]
-            )
-        )
-        */
+          ],
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: Container(
+        margin: EdgeInsets.only(bottom: 30.0),
+        child: FloatingActionButton(
+          backgroundColor: Theme.of(context).accentColor,
+          onPressed: controller != null &&
+                  controller.value.isInitialized &&
+                  !controller.value.isRecordingVideo
+              ? onTakePictureButtonPressed
+              : null,
+          child: Icon(Icons.camera_alt),
+        ),
+      ),
     );
   }
 
@@ -309,7 +287,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               ? toogleAutoFocus
               : null,
         ),
-        FlashButton(),
+        _flashButton(),
         IconButton(
           icon: const Icon(Icons.stop),
           color: Colors.red,
@@ -323,7 +301,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     );
   }
 
-/*
   /// Flash Toggle Button
   Widget _flashButton() {
     IconData iconData = Icons.flash_off;
@@ -363,7 +340,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     // Change UI State
     setState(() {});
   }
-*/
+
   /// Display a row of toggle to select the camera (or a message if no camera is available).
   Widget _cameraTogglesRowWidget() {
     final List<Widget> toggles = <Widget>[];
